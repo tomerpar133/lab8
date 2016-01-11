@@ -4,5 +4,4 @@
 
 USER_OBJS :=
 
-LIBS := -lpthread -lmsockets64
-
+LIBS := -lpthread
