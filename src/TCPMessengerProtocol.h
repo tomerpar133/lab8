@@ -14,6 +14,7 @@
  * and optionally data follows in the format [Data length 4 byte int][ Data ]
  */
 #define MSNGR_PORT 3346
+#define MAX_MSG_SIZE 1024
 
 #define CLOSE_SESSION_WITH_PEER 	1
 #define OPEN_SESSION_WITH_PEER 		2

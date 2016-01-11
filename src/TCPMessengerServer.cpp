@@ -19,20 +19,27 @@ TCPMessengerServer::~TCPMessengerServer(){
 
 int TCPMessengerServer::readCommandFromPeer(TCPSocket* peer){
 	//TODO: read a command from socket
-	return -1;
+	int command;
+	peer->recv(((char*)&command), sizeof(int));
+	return command;
 }
 
 string TCPMessengerServer::readDataFromPeer(TCPSocket* peer){
 	//TODO: read a string from socket
-	return "";
+	char msg[MAX_MSG_SIZE];
+	int msgLen = ntohl(MAX_MSG_SIZE);
+	peer->recv(msg, msgLen);
+	return msg;
 }
 
 void TCPMessengerServer::sendCommandToPeer(TCPSocket* peer, int command){
 	//TODO: send command to socket
+	peer->send((char*)&command, sizeof(int));
 }
 
 void TCPMessengerServer::sendDataToPeer(TCPSocket* peer, string msg){
 	//TODO: send string to socket
+	peer->send(msg.c_str(), msg.length());
 }
 
 void TCPMessengerServer::listPeers(){
