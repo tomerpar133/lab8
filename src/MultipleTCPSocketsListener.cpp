@@ -10,7 +10,7 @@ void MultipleTCPSocketsListener::addSocket(TCPSocket* socket )
 	{
 		return;
 	}
-
+	cout << socket << endl;
 	this->sockets.push_back(socket);
 }
 

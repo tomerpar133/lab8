@@ -13,7 +13,7 @@
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <strings.h>
+#include <string>
 #include <unistd.h>
 #include <stdio.h>
 #include "TCPSocket.h"
@@ -110,7 +110,9 @@ void TCPSocket::cclose(){
 
 string TCPSocket::getClientAsString()
 {
-	return this->fromAddr() + (":" + ntohs(this->peerAddress.sin_port));
+	char port[30];
+	sprintf(port, "%u", htons(this->peerAddress.sin_port));
+	return this->fromAddr() + ":" + port;
 }
 
 string TCPSocket::fromAddr(){

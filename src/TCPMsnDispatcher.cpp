@@ -8,22 +8,32 @@ TCPMsnDispatcher::TCPMsnDispatcher()
 
 void TCPMsnDispatcher::addClient(TCPSocket* client)
 {
+	cout << "Called add client" << endl;
 	this->multiTCPListener.addSocket(client);
-	this->clientsMap.insert(std::pair<string,TCPSocket*>(client->getClientAsString(), client));
+	cout << "Added to multi listen" << endl;
+	string clientAsString = client->getClientAsString();
+	cout << "Client became string : " << clientAsString << endl;
+	this->clientsMap.insert(std::pair<string,TCPSocket*>(clientAsString, client));
+	cout << "Added to map" << endl;
 	this->clientsMap[client->getClientAsString()] = client;
+	cout << "END client" << endl;
 }
 
 void TCPMsnDispatcher::run()
 {
 	while (this->isActive)
 	{
-		TCPSocket* client = this->multiTCPListener.listenToSocket();
-		
-		if (client)
+		std::cout << "Moment before multi listen" << std::endl;
+		if (this->clientsMap.empty())
 		{
-			int code = TCPMessengerServer::readCommandFromPeer(client);
-			//cout << "Got command " << code << " from " << client->getClientAsString() << endl;
-			this->execute(code, client);
+			TCPSocket* client = this->multiTCPListener.listenToSocket();
+			std::cout << "After multi listen" << std::endl;
+			if (client)
+			{
+				int code = TCPMessengerServer::readCommandFromPeer(client);
+				//cout << "Got command " << code << " from " << client->getClientAsString() << endl;
+				this->execute(code, client);
+			}
 		}
 	}
 }
