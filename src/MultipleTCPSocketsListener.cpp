@@ -41,7 +41,15 @@ TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 	//TODO: check the returned value from the select to find the socket that is ready
 	if (numOfActiveFds > 0)
 	{
-		return NULL;
+		for (unsigned int i = 0; i < this->sockets.size(); i++)
+		{
+			TCPSocket* currentSocket = this->sockets[i];
+
+			if (FD_ISSET(currentSocket->getSocketFd(), &readFd))
+			{
+				return currentSocket;
+			}
+		}
 	}
 
 	//TODO: if select return a valid socket return the matching TCPSocket object otherwise return NULL

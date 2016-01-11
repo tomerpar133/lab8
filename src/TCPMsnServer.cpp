@@ -29,9 +29,9 @@ void TCPMsnServer::listenForever()
 	}
 }
 
-string* TCPMsnServer::getPeers()
+vector<string> TCPMsnServer::getPeers()
 {
-	return NULL;
+	return vector<string>();
 }
 
 TCPMsnServer::~TCPMsnServer()
