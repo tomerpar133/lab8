@@ -15,6 +15,7 @@
  */
 #define MSNGR_PORT 3346
 #define MAX_MSG_SIZE 1024
+#define TIMEOUT 10
 
 #define CLOSE_SESSION_WITH_PEER 	1
 #define OPEN_SESSION_WITH_PEER 		2

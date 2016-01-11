@@ -11,6 +11,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include <sys/time.h>
+#include "TCPMessengerProtocol.h"
 #include "TCPSocket.h"
 
 using namespace std;

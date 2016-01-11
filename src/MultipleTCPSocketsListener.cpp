@@ -27,6 +27,11 @@ void MultipleTCPSocketsListener::addSockets(vector<TCPSocket*> socketVec)
 }
 TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 {
+	if (sockets.empty())
+	{
+		return NULL;
+	}
+
 	//TODO: create local set for the select function (fd_set)
 	fd_set readFd;
 	FD_ZERO(&readFd);
@@ -36,7 +41,9 @@ TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 	int biggestSocket = findBiggestFd(readFd);
 
 	//TODO: perform the select
-	int numOfActiveFds = select(biggestSocket + 1, &readFd, NULL, NULL, NULL);
+	struct timeval timeout;
+	timeout.tv_sec = TIMEOUT;
+	int numOfActiveFds = select(biggestSocket + 1, &readFd, NULL, NULL, &timeout);
 
 	//TODO: check the returned value from the select to find the socket that is ready
 	if (numOfActiveFds > 0)
