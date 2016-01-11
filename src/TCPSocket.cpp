@@ -108,6 +108,11 @@ void TCPSocket::cclose(){
 	close(socketFd);
 }
 
+string TCPSocket::getClientAsString()
+{
+	return this->fromAddr() + (":" + ntohs(this->peerAddress.sin_port));
+}
+
 string TCPSocket::fromAddr(){
 	//TODO: return the session destination peer address
 
