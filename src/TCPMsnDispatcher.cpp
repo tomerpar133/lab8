@@ -2,6 +2,7 @@
 
 TCPMsnDispatcher::TCPMsnDispatcher()
 {
+	this->isActive = true;
 }
 
 void TCPMsnDispatcher::addClient(TCPSocket* client)
@@ -11,7 +12,16 @@ void TCPMsnDispatcher::addClient(TCPSocket* client)
 
 void TCPMsnDispatcher::run()
 {
-	
+	while (this->isActive)
+	{
+		TCPSocket* client = multiTCPListener.listenToSocket();
+		
+		if (client)
+		{
+			
+		}
+		
+	}
 }
 
 TCPMsnDispatcher::~TCPMsnDispatcher()

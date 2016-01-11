@@ -5,11 +5,13 @@
 /***********************   TCPMessengerServer implementation ******************************/
 
 TCPMessengerServer::TCPMessengerServer(){
+	this->tcpMsnServer.start();
 	//TODO: class initialization
 }
 
 void TCPMessengerServer::close(){
 	//TODO: close the server
+	this->tcpMsnServer.stop();
 }
 
 TCPMessengerServer::~TCPMessengerServer(){

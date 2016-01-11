@@ -13,6 +13,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include "TCPMsnServer.h"
 #include "MThread.h"
 #include "TCPSocket.h"
 #include "MultipleTCPSocketsListener.h"
@@ -23,6 +24,7 @@ using namespace std;
 
 class TCPMessengerServer{
 	//TODO: add class properties
+	TCPMsnServer tcpMsnServer;
 
 public:
 	/**

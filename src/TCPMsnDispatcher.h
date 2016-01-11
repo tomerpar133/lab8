@@ -9,6 +9,7 @@ class TCPMsnDispatcher : public MThread
 {
 public:
 	MultipleTCPSocketsListener multiTCPListener;
+	bool isActive;
 	TCPMsnDispatcher();
 	void run();
 	void addClient(TCPSocket* client);

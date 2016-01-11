@@ -12,8 +12,14 @@ void TCPMsnServer::run()
 	listenForever();
 }
 
+void TCPMsnServer::stop()
+{
+	this->isActive = false;
+}
+
 void TCPMsnServer::listenForever()
 {
+	cout << "Server is up and listening" << endl;
 	while (this->isActive) 
 	{
 		TCPSocket* tcpSocket = new TCPSocket(MSNGR_PORT);
@@ -21,6 +27,11 @@ void TCPMsnServer::listenForever()
 		//Send the socket to the Dispatcher
 		this->tcpMsnDispatcher.addClient(tcpSocket);
 	}
+}
+
+string* TCPMsnServer::getPeers()
+{
+	return NULL;
 }
 
 TCPMsnServer::~TCPMsnServer()
