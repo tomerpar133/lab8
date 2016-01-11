@@ -2,6 +2,7 @@
 #define TCPMSNSERVER_H_
 
 #include <string>
+#include <vector>
 #include "TCPSocket.h"
 #include "MThread.h"
 #include "TCPMessengerProtocol.h"
@@ -19,7 +20,7 @@ public:
 	void stop();
 	// Accept new connection and  
 	void listenForever();
-	string* getPeers();
+	vector<string> getPeers();
 	virtual ~TCPMsnServer();
 };
 

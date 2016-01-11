@@ -37,5 +37,10 @@ void TCPMessengerServer::sendDataToPeer(TCPSocket* peer, string msg){
 
 void TCPMessengerServer::listPeers(){
 	//TODO: print the connected peers
-}
+	vector<string> peers = this->tcpMsnServer.getPeers();
 
+	for (unsigned int i = 0; i < peers.size(); i++)
+	{
+		cout << "peer " << (i+1) << ") " << peers[i] << endl;
+	}
+}

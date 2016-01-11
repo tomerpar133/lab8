@@ -45,7 +45,7 @@ TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 		{
 			TCPSocket* currentSocket = this->sockets[i];
 
-			if (FD_ISSET(currentSocket, &readFd))
+			if (FD_ISSET(currentSocket->getSocketFd(), &readFd))
 			{
 				return currentSocket;
 			}
