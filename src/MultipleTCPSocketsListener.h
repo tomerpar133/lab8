@@ -36,7 +36,13 @@ public:
 	 * This method checks to see if any of the previous given sockets are ready for reading
 	 * It returns one of the Sockets that are ready.
 	 */
-	TCPSocket* listenToSocket(int timeout=0);
+	TCPSocket* listenToSocket();
+
+private:
+	/**
+	 * This method returns the biggest fd in the vector or 0 if not found
+	 */
+	int findBiggestFd(fd_set readFd);
 };
 
 

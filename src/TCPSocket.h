@@ -69,6 +69,16 @@ public:
 	 * return the address of the connected peer
 	 */
 	string fromAddr();
+
+	int getSocketFd() const
+	{
+		return socketFd;
+	}
+
+	void setSocketFd(int socketFd)
+	{
+		this->socketFd = socketFd;
+	}
 };
 
 #endif
