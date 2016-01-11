@@ -23,15 +23,13 @@ void TCPMsnDispatcher::run()
 {
 	while (this->isActive)
 	{
-		std::cout << "Moment before multi listen" << std::endl;
-		if (this->clientsMap.empty())
+		if (!this->clientsMap.empty())
 		{
 			TCPSocket* client = this->multiTCPListener.listenToSocket();
-			std::cout << "After multi listen" << std::endl;
 			if (client)
 			{
 				int code = TCPMessengerServer::readCommandFromPeer(client);
-				//cout << "Got command " << code << " from " << client->getClientAsString() << endl;
+				cout << "Got command " << code << " from " << client->getClientAsString() << endl;
 				this->execute(code, client);
 			}
 		}
@@ -53,11 +51,16 @@ void TCPMsnDispatcher::execute(int code, TCPSocket* source)
 
 void TCPMsnDispatcher::openSession(TCPSocket* sourceClient)
 {
-	
+	// Search for existing session and destroy if exist
 	string targetStr = TCPMessengerServer::readDataFromPeer(sourceClient);
 	TCPSocket* targetClient = this->clientsMap[targetStr];
-	// Create new broker with sourceClient and targetClient
-	cout << "Executing broker with peers : {" << sourceClient->getClientAsString() << " & " << targetClient->getClientAsString() << "}" << endl;
+	if (targetClient)
+	{
+		// Create new broker with sourceClient and targetClient
+		cout << "Executing broker with peers : {" << sourceClient->getClientAsString() << " & " << targetClient->getClientAsString() << "}" << endl;
+	} else {
+		TCPMessengerServer::sendCommandToPeer(sourceClient, SESSION_REFUSED);
+	}
 }
 
 vector<string> TCPMsnDispatcher::getClients()

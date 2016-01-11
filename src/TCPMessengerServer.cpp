@@ -19,9 +19,9 @@ TCPMessengerServer::~TCPMessengerServer(){
 
 int TCPMessengerServer::readCommandFromPeer(TCPSocket* peer){
 	//TODO: read a command from socket
-	int command;
-	peer->recv(((char*)&command), sizeof(int));
-	return command;
+	int command = 0;
+	while (peer->recv(((char*)&command), sizeof(int)) < 1);
+	return htons(command);
 }
 
 string TCPMessengerServer::readDataFromPeer(TCPSocket* peer){
