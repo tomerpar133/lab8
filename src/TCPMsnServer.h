@@ -9,13 +9,11 @@
 #include "TCPMsnDispatcher.h"
 
 using namespace std;
-
 class TCPMsnServer : public MThread
 {
 public:
 	bool isActive;
 	TCPMsnDispatcher tcpMsnDispatcher;
-	
 	TCPMsnServer();
 	void run();
 	void stop();

@@ -13,11 +13,12 @@
 #include <map>
 #include <vector>
 #include <set>
-#include "TCPMsnServer.h"
 #include "MThread.h"
 #include "TCPSocket.h"
 #include "MultipleTCPSocketsListener.h"
 #include "TCPMessengerProtocol.h"
+#include "TCPMsnServer.h"
+//#include "TCPMsnDispatcher.h"
 
 using namespace std;
 

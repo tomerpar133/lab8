@@ -8,7 +8,7 @@ TCPMsnServer::TCPMsnServer()
 
 void TCPMsnServer::run()
 {
-	this->tcpMsnDispatcher.start();
+	//this->tcpMsnDispatcher.start();
 	listenForever();
 }
 
@@ -31,7 +31,7 @@ void TCPMsnServer::listenForever()
 
 vector<string> TCPMsnServer::getPeers()
 {
-	return vector<string>();
+	return vector<string>(); //this->tcpMsnDispatcher.getClients();
 }
 
 TCPMsnServer::~TCPMsnServer()
