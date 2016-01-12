@@ -1,6 +1,5 @@
 #include "TCPMsnDispatcher.h"
 #include "TCPMessengerServer.h"
-
 TCPMsnDispatcher::TCPMsnDispatcher()
 {
 	this->isActive = true;
@@ -8,15 +7,10 @@ TCPMsnDispatcher::TCPMsnDispatcher()
 
 void TCPMsnDispatcher::addClient(TCPSocket* client)
 {
-	cout << "Called add client" << endl;
 	this->multiTCPListener.addSocket(client);
-	cout << "Added to multi listen" << endl;
 	string clientAsString = client->getClientAsString();
-	cout << "Client became string : " << clientAsString << endl;
 	this->clientsMap.insert(std::pair<string,TCPSocket*>(clientAsString, client));
-	cout << "Added to map" << endl;
 	this->clientsMap[client->getClientAsString()] = client;
-	cout << "END client" << endl;
 }
 
 void TCPMsnDispatcher::run()
@@ -52,13 +46,29 @@ void TCPMsnDispatcher::execute(int code, TCPSocket* source)
 void TCPMsnDispatcher::openSession(TCPSocket* sourceClient)
 {
 	// Search for existing session and destroy if exist
+	if (brokersMap[sourceClient])
+	{
+		brokersMap[sourceClient]->closeSession();                                                 
+	}
+	
 	string targetStr = TCPMessengerServer::readDataFromPeer(sourceClient);
 	TCPSocket* targetClient = this->clientsMap[targetStr];
 	if (targetClient)
 	{
+		TCPMessengerServer::sendCommandToPeer(targetClient, OPEN_SESSION_WITH_PEER);
+		TCPMessengerServer::sendDataToPeer(targetClient, sourceClient->getClientAsString());
+		TCPMessengerServer::sendCommandToPeer(sourceClient, SESSION_ESTABLISHED);
 		// Create new broker with sourceClient and targetClient
+		TCPMsnBroker* broker = new TCPMsnBroker(sourceClient, targetClient, this);
+		this->brokersMap[sourceClient] = broker;
+		this->brokersMap[targetClient] = broker;
+		this->removeClient(sourceClient->getClientAsString());
+		this->removeClient(targetClient->getClientAsString());
 		cout << "Executing broker with peers : {" << sourceClient->getClientAsString() << " & " << targetClient->getClientAsString() << "}" << endl;
-	} else {
+		broker->start();
+	} 
+	else 
+	{
 		TCPMessengerServer::sendCommandToPeer(sourceClient, SESSION_REFUSED);
 	}
 }
@@ -74,6 +84,19 @@ vector<string> TCPMsnDispatcher::getClients()
 	return clients;
 }
 
+void TCPMsnDispatcher::removeClient(string client)
+{
+	this->clientsMap.erase(client);
+}
+
+void TCPMsnDispatcher::removeBroker(TCPSocket* clientOne, TCPSocket* clientTwo)
+{
+	TCPMsnBroker* broker = this->brokersMap[clientOne];
+	this->brokersMap.erase(clientOne);
+	this->brokersMap.erase(clientTwo);
+	delete broker;
+}
+
 TCPMsnDispatcher::~TCPMsnDispatcher()
 {
 	while (this->clientsMap.size() > 0)
@@ -84,4 +107,6 @@ TCPMsnDispatcher::~TCPMsnDispatcher()
 		this->clientsMap.erase(iter);
 		delete client;
 	}
+	
+	cout << "dispatcher died" << endl;
 }

@@ -24,7 +24,9 @@ void TCPMsnServer::listenForever()
 	while (this->isActive) 
 	{
 		//Send the socket to the Dispatcher
-		this->tcpMsnDispatcher.addClient(tcpSocket.listenAndAccept());
+		TCPSocket* newClient = tcpSocket.listenAndAccept();
+		cout << "client connected: " << newClient->getClientAsString() << endl; 
+		this->tcpMsnDispatcher.addClient(newClient);
 	}
 }
 
