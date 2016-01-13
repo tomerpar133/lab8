@@ -31,7 +31,6 @@ void TCPMsnDispatcher::run()
 				else
 				{
 					int code = TCPMessengerServer::readCommandFromPeer(client);
-					cout << "Got command " << code << " from " << client->getClientAsString() << endl;
 					this->execute(code, client);
 				}
 			}
@@ -48,7 +47,6 @@ void TCPMsnDispatcher::execute(int code, TCPSocket* source)
 			break;
 		case EXIT:
 			break;
-
 	}
 }
 
@@ -98,7 +96,7 @@ vector<TCPSocket*> TCPMsnDispatcher::getClientsSockets()
 	vector<TCPSocket*> clients;
 	for(std::map<string,TCPSocket*>::iterator iter = this->clientsMap.begin(); iter != this->clientsMap.end(); ++iter)
 	{
-		clients.push_back(this->clientsMap[iter->first]);
+		clients.push_back(iter->second);
 	}
 	
 	return clients;

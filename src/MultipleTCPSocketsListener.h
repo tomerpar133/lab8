@@ -22,7 +22,6 @@ class MultipleTCPSocketsListener{
 private:
 	typedef vector<TCPSocket*> tSocketsContainer;
 	tSocketsContainer sockets;
-	tSocketsContainer invalidSockets;
 
 public:
 	/*

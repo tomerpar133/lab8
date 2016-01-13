@@ -60,8 +60,10 @@ void TCPMessengerServer::listPeers(){
 	//TODO: print the connected peers
 	vector<string> peers = this->tcpMsnServer.getPeers();
 
+	cout << "----------Peers list----------" << endl;
 	for (unsigned int i = 0; i < peers.size(); i++)
 	{
 		cout << "peer " << (i+1) << ") " << peers[i] << endl;
 	}
+	cout << "------------------------------" << endl;
 }

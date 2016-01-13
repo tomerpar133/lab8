@@ -22,6 +22,7 @@ void TCPMsnBroker::run()
 			TCPSocket* target = source == this->clientOne ? this->clientTwo : this->clientOne;
 			if (TCPMessengerServer::isSocketClosed(source))
 			{
+				cout << "Broker: Client socket is closed: " << source->getClientAsString() << endl;
 				exit(source, target);
 				break;
 			}
@@ -66,7 +67,7 @@ void TCPMsnBroker::closeSession()
 	this->isActive = false;
 	TCPMessengerServer::sendCommandToPeer(this->clientOne, CLOSE_SESSION_WITH_PEER);
 	TCPMessengerServer::sendCommandToPeer(this->clientTwo, CLOSE_SESSION_WITH_PEER);
-	cout << "returning clients to dispatcher" << endl;
+	cout << "Broker: Returning clients to dispatcher" << endl;
 	this->dispatcher->addClient(this->clientOne);
 	this->dispatcher->addClient(this->clientTwo);
 	this->dispatcher->removeBroker(this->clientOne, this->clientTwo);
@@ -77,12 +78,14 @@ void TCPMsnBroker::exit(TCPSocket* source, TCPSocket* target)
 	this->isActive = false;
 	TCPMessengerServer::sendCommandToPeer(this->clientOne, CLOSE_SESSION_WITH_PEER);
 	TCPMessengerServer::sendCommandToPeer(this->clientTwo, CLOSE_SESSION_WITH_PEER);
-	this->dispatcher->removeBroker(this->clientOne, this->clientTwo);
 	this->dispatcher->addClient(target);
+	cout << "Broker: (Before delete) Client 1: " << this->clientOne << "Client 2: " << this->clientTwo << endl;
 	delete source;
+	cout << "Broker: (After delete) Client 1: " << this->clientOne << "Client 2: " << this->clientTwo << endl;
+	this->dispatcher->removeBroker(this->clientOne, this->clientTwo);
 }
 
 TCPMsnBroker::~TCPMsnBroker()
 {
-	cout << "broker died" << endl;
+	cout << "broker died @-^--" << endl;
 }
