@@ -88,6 +88,11 @@ vector<string> TCPMsnDispatcher::getClients()
 		clients.push_back(iter->first);
 	}
 	
+	for(std::map<TCPSocket*, TCPMsnBroker*>::iterator iter = this->brokersMap.begin(); iter != this->brokersMap.end(); ++iter)
+	{
+		clients.push_back(iter->first->getClientAsString());
+	}
+	
 	return clients;
 }
 
