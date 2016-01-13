@@ -15,7 +15,7 @@ class TCPMsnBroker;
 class TCPMsnDispatcher : public MThread
 {
 public:
-	MultipleTCPSocketsListener multiTCPListener;
+	//MultipleTCPSocketsListener multiTCPListener;
 	map<string, TCPSocket*> clientsMap;
 	map<TCPSocket*, TCPMsnBroker*> brokersMap;
 	bool isActive;
@@ -28,6 +28,7 @@ public:
 	// Command Handlers
 	void execute(int code, TCPSocket* source);
 	void openSession(TCPSocket* source);
+	vector<TCPSocket*> getClientsSockets();
 	virtual ~TCPMsnDispatcher();
 };
 

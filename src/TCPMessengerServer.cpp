@@ -47,6 +47,15 @@ void TCPMessengerServer::sendDataToPeer(TCPSocket* peer, string msg){
 	peer->send(msg.c_str(), msg.length());
 }
 
+bool TCPMessengerServer::isSocketClosed(TCPSocket* peer)
+{
+	int n = 0;
+	ioctl(peer->getSocketFd(), FIONREAD, &n);
+	
+	return n == 0;
+
+}
+
 void TCPMessengerServer::listPeers(){
 	//TODO: print the connected peers
 	vector<string> peers = this->tcpMsnServer.getPeers();

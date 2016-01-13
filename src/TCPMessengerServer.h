@@ -13,6 +13,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <sys/ioctl.h>
 #include "MThread.h"
 #include "TCPSocket.h"
 #include "MultipleTCPSocketsListener.h"
@@ -64,6 +65,10 @@ public:
 	 */
 	static void sendDataToPeer(TCPSocket* peer, string msg);
 
+	/**
+	 * check if socket is closed
+	 */
+	static bool isSocketClosed(TCPSocket* peer);
 
 };
 #endif

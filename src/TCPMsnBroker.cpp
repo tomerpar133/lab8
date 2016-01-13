@@ -20,6 +20,12 @@ void TCPMsnBroker::run()
 		if (source)
 		{
 			TCPSocket* target = source == this->clientOne ? this->clientTwo : this->clientOne;
+			if (TCPMessengerServer::isSocketClosed(source))
+			{
+				exit(source, target);
+				break;
+			}
+			
 			int command = TCPMessengerServer::readCommandFromPeer(source);
 			this->execute(command, source, target);	
 		}
@@ -33,16 +39,18 @@ void TCPMsnBroker::execute(int command, TCPSocket* source, TCPSocket* target)
 		case OPEN_SESSION_WITH_PEER:
 			this->dispatcher->openSession(source);
 			break;
+			
 		case CLOSE_SESSION_WITH_PEER:
 			this->closeSession();
 			break;
+			
 		case SEND_MSG_TO_PEER:
 			this->sendMessage(source, target);
 			break;
+			
 		case EXIT:
 			this->exit(source, target);
 			break;
-
 	}
 }
 

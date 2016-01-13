@@ -67,6 +67,7 @@ TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 			{
 				cout << "Incoming from : " << currentSocket->getClientAsString() << endl;
 				activeClient = currentSocket;
+				break;
 			}
 		}
 	} 

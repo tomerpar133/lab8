@@ -7,7 +7,7 @@ TCPMsnDispatcher::TCPMsnDispatcher()
 
 void TCPMsnDispatcher::addClient(TCPSocket* client)
 {
-	this->multiTCPListener.addSocket(client);
+	//this->multiTCPListener.addSocket(client);
 	string clientAsString = client->getClientAsString();
 	this->clientsMap.insert(std::pair<string,TCPSocket*>(clientAsString, client));
 	this->clientsMap[client->getClientAsString()] = client;
@@ -19,12 +19,21 @@ void TCPMsnDispatcher::run()
 	{
 		if (!this->clientsMap.empty())
 		{
-			TCPSocket* client = this->multiTCPListener.listenToSocket();
+			MultipleTCPSocketsListener multiTCPListener;
+			multiTCPListener.addSockets(this->getClientsSockets());
+			TCPSocket* client = multiTCPListener.listenToSocket();
 			if (client)
 			{
-				int code = TCPMessengerServer::readCommandFromPeer(client);
-				cout << "Got command " << code << " from " << client->getClientAsString() << endl;
-				this->execute(code, client);
+				if (TCPMessengerServer::isSocketClosed(client))
+				{
+					this->removeClient(client->getClientAsString());
+				}
+				else
+				{
+					int code = TCPMessengerServer::readCommandFromPeer(client);
+					cout << "Got command " << code << " from " << client->getClientAsString() << endl;
+					this->execute(code, client);
+				}
 			}
 		}
 	}
@@ -79,6 +88,17 @@ vector<string> TCPMsnDispatcher::getClients()
 	for(std::map<string,TCPSocket*>::iterator iter = this->clientsMap.begin(); iter != this->clientsMap.end(); ++iter)
 	{
 		clients.push_back(iter->first);
+	}
+	
+	return clients;
+}
+
+vector<TCPSocket*> TCPMsnDispatcher::getClientsSockets()
+{
+	vector<TCPSocket*> clients;
+	for(std::map<string,TCPSocket*>::iterator iter = this->clientsMap.begin(); iter != this->clientsMap.end(); ++iter)
+	{
+		clients.push_back(this->clientsMap[iter->first]);
 	}
 	
 	return clients;
