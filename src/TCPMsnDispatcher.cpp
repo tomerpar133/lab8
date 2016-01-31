@@ -9,7 +9,6 @@ void TCPMsnDispatcher::addClient(TCPSocket* client)
 {
 	//this->multiTCPListener.addSocket(client);
 	string clientAsString = client->getClientAsString();
-	this->clientsMap.insert(std::pair<string,TCPSocket*>(clientAsString, client));
 	this->clientsMap[client->getClientAsString()] = client;
 }
 
