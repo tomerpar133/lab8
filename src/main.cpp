@@ -7,8 +7,13 @@
 //============================================================================
 
 #include <iostream>
+#include <map>
+#include <stdlib.h>
 #include "TCPMessengerServer.h"
 using namespace std;
+typedef void (*commandHandler)(); 
+map<string, commandHandler> commandsMap;
+TCPMessengerServer msngrServer;
 
 void printInstructions(){
 	cout<<"-----------------------"<<endl;
@@ -17,24 +22,40 @@ void printInstructions(){
 	cout<<"-----------------------"<<endl;
 }
 
+void listPeers()
+{
+	msngrServer.listPeers();
+}
+
+void exitHandler()
+{
+	msngrServer.close();
+	cout<<"messenger was closed"<<endl;
+	exit(0);
+}
+
 int main(){
 	cout<<"Welcome to TCP messenger Server"<<endl;
 	printInstructions();
-	TCPMessengerServer msngrServer;
+	
+	commandsMap["lp"] = listPeers;
+	commandsMap["x"] = exitHandler;
+	
 	while(true){
 		string msg;
 		string command;
 		cin >> command;
-		if(command == "lp"){
-			msngrServer.listPeers();
-		}else if(command == "x"){
-			break;
-		}else{
+		
+		if (commandsMap.find(command) != commandsMap.end())
+		{
+			commandsMap[command]();
+		}
+		else
+		{
 			cout<<"wrong input"<<endl;
 			printInstructions();
 		}
 	}
-	msngrServer.close();
-	cout<<"messenger was closed"<<endl;
+	
 	return 0;
 }
