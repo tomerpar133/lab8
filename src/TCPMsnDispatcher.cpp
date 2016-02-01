@@ -55,7 +55,7 @@ void TCPMsnDispatcher::execute(int code, Client* source)
 			break;
 		case LIST_ROOMS:
 			TCPMessengerServer::sendDataToPeer(source->getSocket(), 
-					TCPMessengerServer::vectorToString(this->getClients()));
+					TCPMessengerServer::vectorToString(this->getRooms()));
 			break;
 		case LIST_ROOM_USERS:
 			roomName = TCPMessengerServer::readDataFromPeer(source->getSocket());

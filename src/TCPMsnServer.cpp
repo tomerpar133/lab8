@@ -10,6 +10,7 @@ TCPMsnServer::TCPMsnServer()
 void TCPMsnServer::run()
 {
 	this->tcpMsnDispatcher.start();
+	this->tcpMsnLoginHandler->start();
 	listenForever();
 }
 

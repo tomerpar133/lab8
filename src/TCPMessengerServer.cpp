@@ -22,6 +22,7 @@ int TCPMessengerServer::readCommandFromPeer(TCPSocket* peer){
 	//TODO: read a command from socket
 	int command = 0;
 	peer->recv((char*)&command, sizeof(int));
+	cout << "Got command " << ntohl(command) << endl; 
 	return ntohl(command);
 }
 
@@ -45,6 +46,7 @@ void TCPMessengerServer::sendDataToPeer(TCPSocket* peer, string msg){
 	int msgLength = htonl(msg.length());
 	peer->send((char*)&msgLength, sizeof(int));
 	peer->send(msg.c_str(), msg.length());
+	cout << "Sent data " << msg << endl;
 }
 
 bool TCPMessengerServer::isSocketClosed(TCPSocket* peer)

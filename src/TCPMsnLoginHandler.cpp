@@ -4,6 +4,7 @@
 TCPMsnLoginHandler::TCPMsnLoginHandler(TCPMsnDispatcher* tcpMsnDispatcher)
 {
 	this->tcpMsnDispatcher = tcpMsnDispatcher;
+	this->isActive = true;
 }
 
 void TCPMsnLoginHandler::addGuest(TCPSocket* socket)
@@ -17,20 +18,24 @@ void TCPMsnLoginHandler::run()
 	while(isActive)
 	{
 		MultipleClientSocketsListener multiClientListener;
-		multiClientListener.addClients(this->guestsPool);
-		Client* client = multiClientListener.listenToClients();
-		if (client)
+		if (!this->guestsPool.empty())
 		{
-			if (TCPMessengerServer::isSocketClosed(client->getSocket()))
+			multiClientListener.addClients(this->guestsPool);
+			cout << "Login handler is listening... " << endl;
+			Client* client = multiClientListener.listenToClients();
+			if (client)
 			{
-				vector<Client*>::iterator clientToRemove = std::find(this->guestsPool.begin(), this->guestsPool.end(), client);
-				if (clientToRemove != this->guestsPool.end())
-					this->guestsPool.erase(clientToRemove);
-			}
-			else
-			{
-				int code = TCPMessengerServer::readCommandFromPeer(client->getSocket());
-				this->execute(code, client);
+				if (TCPMessengerServer::isSocketClosed(client->getSocket()))
+				{
+					vector<Client*>::iterator clientToRemove = std::find(this->guestsPool.begin(), this->guestsPool.end(), client);
+					if (clientToRemove != this->guestsPool.end())
+						this->guestsPool.erase(clientToRemove);
+				}
+				else
+				{
+					int code = TCPMessengerServer::readCommandFromPeer(client->getSocket());
+					this->execute(code, client);
+				}
 			}
 		}
 	}
@@ -56,6 +61,8 @@ void TCPMsnLoginHandler::clientLogin(Client* client)
 
 void TCPMsnLoginHandler::execute(int code, Client* client)
 {
+	string roomName;
+	
 	switch (code)
 	{
 	case LOGIN:
@@ -63,6 +70,23 @@ void TCPMsnLoginHandler::execute(int code, Client* client)
 		break;
 	case REGISTER:
 		this->registerClient(client);
+		break;
+	case LIST_USERS:
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), 
+				TCPMessengerServer::vectorToString(TCPMessengerServer::getRegisteredUsers()));
+		break;
+	case LIST_CONNECTED_USERS:
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), 
+				TCPMessengerServer::vectorToString(this->tcpMsnDispatcher->getClients()));
+		break;
+	case LIST_ROOMS:
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), 
+				TCPMessengerServer::vectorToString(this->tcpMsnDispatcher->getRooms()));
+		break;
+	case LIST_ROOM_USERS:
+		roomName = TCPMessengerServer::readDataFromPeer(client->getSocket());
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), 
+				TCPMessengerServer::vectorToString(this->tcpMsnDispatcher->getUsersInRoom(roomName)));
 		break;
 	default:
 		this->invalideOpcode(client);
