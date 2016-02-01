@@ -76,14 +76,6 @@ void TCPMsnLoginHandler::invalideOpcode(Client* client)
 	TCPMessengerServer::sendDataToPeer(client->getSocket(), INVALID_OPERATION);
 }
 
-vector<string> TCPMsnLoginHandler::getRegisteredList()
-{
-	vector<string> users;
-	users.push_back("Tomer");
-	users.push_back("Avihay");
-	return users;
-}
-
 TCPMsnLoginHandler::~TCPMsnLoginHandler()
 {
 	

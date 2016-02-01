@@ -36,11 +36,6 @@ vector<string> TCPMsnServer::getClients()
 	return this->tcpMsnDispatcher.getClients();
 }
 
-vector<string> TCPMsnServer::getRegisteredUsers()
-{
-	return this->tcpMsnLoginHandler->getRegisteredList();
-}
-
 vector<string> TCPMsnServer::getAllSessions()
 {
 	return this->tcpMsnDispatcher.getSessions();

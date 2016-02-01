@@ -26,7 +26,6 @@ public:
 	void invalideOpcode(Client* client);
 	void run();
 	void execute(int code, Client* client);
-	vector<string> getRegisteredList();
 	virtual ~TCPMsnLoginHandler();
 };
 

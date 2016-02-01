@@ -38,10 +38,29 @@ void TCPMsnDispatcher::run()
 
 void TCPMsnDispatcher::execute(int code, Client* source)
 {
+	string roomName;
+	
 	switch (code)
 	{
 		case OPEN_SESSION_WITH_PEER:
 			this->openSession(source);
+			break;
+		case LIST_USERS:
+			TCPMessengerServer::sendDataToPeer(source->getSocket(), 
+					TCPMessengerServer::vectorToString(TCPMessengerServer::getRegisteredUsers()));
+			break;
+		case LIST_CONNECTED_USERS:
+			TCPMessengerServer::sendDataToPeer(source->getSocket(), 
+					TCPMessengerServer::vectorToString(this->getClients()));
+			break;
+		case LIST_ROOMS:
+			TCPMessengerServer::sendDataToPeer(source->getSocket(), 
+					TCPMessengerServer::vectorToString(this->getClients()));
+			break;
+		case LIST_ROOM_USERS:
+			roomName = TCPMessengerServer::readDataFromPeer(source->getSocket());
+			TCPMessengerServer::sendDataToPeer(source->getSocket(), 
+					TCPMessengerServer::vectorToString(this->getUsersInRoom(roomName)));
 			break;
 		case EXIT:
 			break;

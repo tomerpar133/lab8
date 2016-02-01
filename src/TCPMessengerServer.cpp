@@ -53,12 +53,20 @@ bool TCPMessengerServer::isSocketClosed(TCPSocket* peer)
 	ioctl(peer->getSocketFd(), FIONREAD, &n);
 	
 	return n == 0;
+}
 
+vector<string> TCPMessengerServer::getRegisteredUsers()
+{
+	vector<string> users;
+	users.push_back("Tomer");
+	users.push_back("Avihay");
+
+	return users;
 }
 
 void TCPMessengerServer::listRegisteredUsers()
 {
-	printStringVector(this->tcpMsnServer.getRegisteredUsers(), "All registered users");
+	printStringVector(TCPMessengerServer::getRegisteredUsers(), "All registered users");
 }
 
 void TCPMessengerServer::listPeers()
@@ -92,4 +100,16 @@ void TCPMessengerServer::printStringVector(vector<string> vect, string descripti
 		cout << (i+1) << ") " << vect[i] << endl;
 	}
 	cout << "------------------------------" << endl;
+}
+
+string TCPMessengerServer::vectorToString(vector<string> vect)
+{
+	string packedVector = "";
+	
+	for (unsigned int i = 0; i < vect.size(); i++)
+	{
+		packedVector += vect[i] + '\n';
+	}
+	
+	return packedVector;
 }

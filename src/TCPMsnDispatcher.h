@@ -4,6 +4,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 #include "TCPSocket.h"
 #include "MThread.h"
 #include "MultipleClientSocketsListener.h"

@@ -81,6 +81,16 @@ public:
 	 * check if socket is closed
 	 */
 	static bool isSocketClosed(TCPSocket* peer);
+	
+	/**
+	 * pack vector to single string
+	 */
+	static string vectorToString(vector<string>);
+	
+	/**
+	 * get registered users
+	 */
+	static vector<string> getRegisteredUsers(); 
 
 };
 #endif
