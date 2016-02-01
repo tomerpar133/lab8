@@ -3,24 +3,24 @@
 
 #include "MThread.h"
 #include "TCPSocket.h"
-#include "MultipleTCPSocketsListener.h"
+#include "MultipleClientSocketsListener.h"
 #include "TCPMsnDispatcher.h"
 #include "TCPMessengerProtocol.h"
 class TCPMsnDispatcher;
 class TCPMsnBroker : public MThread
 {
-	TCPSocket* clientOne;
-	TCPSocket* clientTwo;
-	MultipleTCPSocketsListener multiTCPListener;
+	Client* clientOne;
+	Client* clientTwo;
+	MultipleClientSocketsListener multiTCPListener;
 	TCPMsnDispatcher* dispatcher;
 	bool isActive;
 public:
-	TCPMsnBroker(TCPSocket* clientOne, TCPSocket* clientTwo, TCPMsnDispatcher* dispatcher);
+	TCPMsnBroker(Client* clientOne, Client* clientTwo, TCPMsnDispatcher* dispatcher);
 	void run();
-	void execute(int command, TCPSocket* source, TCPSocket* target);
-	void sendMessage(TCPSocket* source, TCPSocket* target);
+	void execute(int command, Client* source, Client* target);
+	void sendMessage(Client* source, Client* target);
 	void closeSession();
-	void exit(TCPSocket* source, TCPSocket* target);
+	void exit(Client* source, Client* target);
 	virtual ~TCPMsnBroker();
 };
 

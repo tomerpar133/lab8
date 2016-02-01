@@ -16,13 +16,12 @@
 #include <sys/ioctl.h>
 #include "MThread.h"
 #include "TCPSocket.h"
-#include "MultipleTCPSocketsListener.h"
+#include "MultipleClientSocketsListener.h"
 #include "TCPMessengerProtocol.h"
 #include "TCPMsnServer.h"
 //#include "TCPMsnDispatcher.h"
 
 using namespace std;
-
 
 class TCPMessengerServer{
 	//TODO: add class properties
@@ -39,12 +38,25 @@ public:
 	 * print out the list of connected clients (for debug)
 	 */
 	void listPeers();
+	
+	void listRegisteredUsers();
+	
+	void listRooms();
+	
+	void listSessions();
+	
+	void listUsersInRoom(string);
 
 	/**
 	 * close the server
 	 */
 	void close();
-
+	
+	/**
+	 * print vector
+	 */
+	static void printStringVector(vector<string>, string);
+	
 	/**
 	 * read command from peer
 	 */

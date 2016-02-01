@@ -17,14 +17,41 @@ TCPMessengerServer msngrServer;
 
 void printInstructions(){
 	cout<<"-----------------------"<<endl;
-	cout<<"lp - list peers"<<endl;
-	cout<<"x - shutdown server"<<endl;
+	cout<<"lu 	- list all users"<<endl;
+	cout<<"lcu 	- list connected users"<<endl;
+	cout<<"ls	- list sessions"<<endl;
+	cout<<"lr 	- list all rooms"<<endl;
+	cout<<"lru	- list all users in this room (e.g. lru <room name>)"<<endl;
+	cout<<"x 	- shutdown server"<<endl;
 	cout<<"-----------------------"<<endl;
 }
 
-void listPeers()
+void listConnectedUsers()
 {
 	msngrServer.listPeers();
+}
+
+void listUsers()
+{
+	msngrServer.listRegisteredUsers();
+	// Print saved users in wadia
+}
+
+void listRooms()
+{
+	msngrServer.listRooms();
+}
+
+void listSessions()
+{
+	msngrServer.listSessions();
+}
+
+void listRoomUsers()
+{
+	string roomName;
+	cin >> roomName;
+	msngrServer.listUsersInRoom(roomName);
 }
 
 void exitHandler()
@@ -34,14 +61,20 @@ void exitHandler()
 	exit(0);
 }
 
-int main(){
+int main()
+{
 	cout<<"Welcome to TCP messenger Server"<<endl;
 	printInstructions();
 	
-	commandsMap["lp"] = listPeers;
+	commandsMap["lu"] = listUsers;
+	commandsMap["lcu"] = listConnectedUsers;
+	commandsMap["ls"] = listSessions;
+	commandsMap["lr"] = listRooms;
+	commandsMap["lru"] = listRoomUsers;
 	commandsMap["x"] = exitHandler;
 	
-	while(true){
+	while(true)
+	{
 		string msg;
 		string command;
 		cin >> command;

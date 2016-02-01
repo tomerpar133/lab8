@@ -6,9 +6,10 @@
 #include <vector>
 #include "TCPSocket.h"
 #include "MThread.h"
-#include "MultipleTCPSocketsListener.h"
+#include "MultipleClientSocketsListener.h"
 #include "TCPMessengerProtocol.h"
 #include "TCPMsnBroker.h"
+#include "Client.h"
 
 using namespace std;
 class TCPMsnBroker;
@@ -16,19 +17,22 @@ class TCPMsnDispatcher : public MThread
 {
 public:
 	//MultipleTCPSocketsListener multiTCPListener;
-	map<string, TCPSocket*> clientsMap;
-	map<TCPSocket*, TCPMsnBroker*> brokersMap;
+	map<string, Client*> clientsMap;
+	map<Client*, TCPMsnBroker*> brokersMap;
 	bool isActive;
 	TCPMsnDispatcher();
 	void run();
-	void addClient(TCPSocket* client);
+	void addClient(Client* client);
 	void removeClient(string client);
-	void removeBroker(TCPSocket* clientOne, TCPSocket* clientTwo);
+	void removeBroker(Client* clientOne, Client* clientTwo);
 	vector<string> getClients();
+	vector<string> getSessions();
+	vector<string> getRooms();
+	vector<string> getUsersInRoom(string);
 	// Command Handlers
-	void execute(int code, TCPSocket* source);
-	void openSession(TCPSocket* source);
-	vector<TCPSocket*> getClientsSockets();
+	void execute(int code, Client* source);
+	void openSession(Client* source);
+	vector<Client*> getClientsSockets();
 	virtual ~TCPMsnDispatcher();
 };
 

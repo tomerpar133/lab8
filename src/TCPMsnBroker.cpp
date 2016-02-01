@@ -2,13 +2,13 @@
 #include "TCPMessengerServer.h"
 
 
-TCPMsnBroker::TCPMsnBroker(TCPSocket* clientOne, TCPSocket* clientTwo, TCPMsnDispatcher* dispatcher)
+TCPMsnBroker::TCPMsnBroker(Client* clientOne, Client* clientTwo, TCPMsnDispatcher* dispatcher)
 {
 	this->isActive = true;
 	this->clientOne = clientOne;
 	this->clientTwo = clientTwo;
-	this->multiTCPListener.addSocket(clientOne);
-	this->multiTCPListener.addSocket(clientTwo);
+	this->multiTCPListener.addClient(clientOne);
+	this->multiTCPListener.addClient(clientTwo);
 	this->dispatcher = dispatcher;
 }
 
@@ -16,23 +16,23 @@ void TCPMsnBroker::run()
 {
 	while (this->isActive) 
 	{
-		TCPSocket* source = this->multiTCPListener.listenToSocket();
+		Client* source = this->multiTCPListener.listenToClients();
 		if (source)
 		{
-			TCPSocket* target = source == this->clientOne ? this->clientTwo : this->clientOne;
-			if (TCPMessengerServer::isSocketClosed(source))
+			Client* target = source == this->clientOne ? this->clientTwo : this->clientOne;
+			if (TCPMessengerServer::isSocketClosed(source->getSocket()))
 			{
 				exit(source, target);
 				break;
 			}
 			
-			int command = TCPMessengerServer::readCommandFromPeer(source);
+			int command = TCPMessengerServer::readCommandFromPeer(source->getSocket());
 			this->execute(command, source, target);	
 		}
 	}
 }
 
-void TCPMsnBroker::execute(int command, TCPSocket* source, TCPSocket* target)
+void TCPMsnBroker::execute(int command, Client* source, Client* target)
 {
 	switch (command)
 	{
@@ -54,28 +54,28 @@ void TCPMsnBroker::execute(int command, TCPSocket* source, TCPSocket* target)
 	}
 }
 
-void TCPMsnBroker::sendMessage(TCPSocket* source, TCPSocket* target)
+void TCPMsnBroker::sendMessage(Client* source, Client* target)
 {
-	string message = TCPMessengerServer::readDataFromPeer(source);
-	TCPMessengerServer::sendCommandToPeer(target, SEND_MSG_TO_PEER);
-	TCPMessengerServer::sendDataToPeer(target, message);
+	string message = TCPMessengerServer::readDataFromPeer(source->getSocket());
+	TCPMessengerServer::sendCommandToPeer(target->getSocket(), SEND_MSG_TO_PEER);
+	TCPMessengerServer::sendDataToPeer(target->getSocket(), message);
 }
 
 void TCPMsnBroker::closeSession()
 {
 	this->isActive = false;
-	TCPMessengerServer::sendCommandToPeer(this->clientOne, CLOSE_SESSION_WITH_PEER);
-	TCPMessengerServer::sendCommandToPeer(this->clientTwo, CLOSE_SESSION_WITH_PEER);
+	TCPMessengerServer::sendCommandToPeer(this->clientOne->getSocket(), CLOSE_SESSION_WITH_PEER);
+	TCPMessengerServer::sendCommandToPeer(this->clientTwo->getSocket(), CLOSE_SESSION_WITH_PEER);
 	this->dispatcher->addClient(this->clientOne);
 	this->dispatcher->addClient(this->clientTwo);
 	this->dispatcher->removeBroker(this->clientOne, this->clientTwo);
 }
 
-void TCPMsnBroker::exit(TCPSocket* source, TCPSocket* target)
+void TCPMsnBroker::exit(Client* source, Client* target)
 {
 	this->isActive = false;
-	TCPMessengerServer::sendCommandToPeer(this->clientOne, CLOSE_SESSION_WITH_PEER);
-	TCPMessengerServer::sendCommandToPeer(this->clientTwo, CLOSE_SESSION_WITH_PEER);
+	TCPMessengerServer::sendCommandToPeer(this->clientOne->getSocket(), CLOSE_SESSION_WITH_PEER);
+	TCPMessengerServer::sendCommandToPeer(this->clientTwo->getSocket(), CLOSE_SESSION_WITH_PEER);
 	this->dispatcher->addClient(target);
 	delete source;
 	this->dispatcher->removeBroker(this->clientOne, this->clientTwo);

@@ -1,12 +1,12 @@
 /*
- * MultipleTCPSocketsListener.h
+ * MultipleClientSocketsListener.h
  *
  *  Created on: Feb 14, 2013
- *      Author: efi
+ *      Author: Tomer hagever
  */
 
-#ifndef MULTIPLETCPSOCKETSLISTENER_H_
-#define MULTIPLETCPSOCKETSLISTENER_H_
+#ifndef MULTIPLECLIENTSOCKETSLISTENER_H_
+#define MULTIPLECLIENTSOCKETSLISTENER_H_
 
 #include <iostream>
 #include <stdio.h>
@@ -14,31 +14,31 @@
 #include <sys/time.h>
 #include "TCPMessengerProtocol.h"
 #include "TCPSocket.h"
+#include "Client.h"
 
 using namespace std;
 
 
-class MultipleTCPSocketsListener{
+class MultipleClientSocketsListener{
 private:
-	typedef vector<TCPSocket*> tSocketsContainer;
-	tSocketsContainer sockets;
+	vector<Client*> clients;
 
 public:
 	/*
 	 * Add the given socket to the socket list to be listen on
 	 */
-	void addSocket(TCPSocket* socket);
+	void addClient(Client*);
 
 	/*
 	 * Add the given sockets to the socket list to be listen on
 	 */
-	void addSockets(vector<TCPSocket*> socketVec);
+	void addClients(vector<Client*>);
 
 	/*
 	 * This method checks to see if any of the previous given sockets are ready for reading
 	 * It returns one of the Sockets that are ready.
 	 */
-	TCPSocket* listenToSocket();
+	Client* listenToClients();
 
 private:
 	/**
@@ -48,4 +48,4 @@ private:
 };
 
 
-#endif /* MULTIPLETCPSOCKETSLISTENER_H_ */
+#endif /* MULTIPLECLIENTSOCKETSLISTENER_H_ */

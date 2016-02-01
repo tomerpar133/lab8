@@ -56,14 +56,40 @@ bool TCPMessengerServer::isSocketClosed(TCPSocket* peer)
 
 }
 
-void TCPMessengerServer::listPeers(){
-	//TODO: print the connected peers
-	vector<string> peers = this->tcpMsnServer.getPeers();
+void TCPMessengerServer::listRegisteredUsers()
+{
+	printStringVector(this->tcpMsnServer.getRegisteredUsers(), "All registered users");
+}
 
-	cout << "----------Peers list----------" << endl;
-	for (unsigned int i = 0; i < peers.size(); i++)
+void TCPMessengerServer::listPeers()
+{
+	printStringVector(this->tcpMsnServer.getClients(), "Connected users");
+}
+
+void TCPMessengerServer::listSessions()
+{
+	printStringVector(this->tcpMsnServer.getAllSessions(), "Sessions");
+}
+
+void TCPMessengerServer::listRooms()
+{
+	printStringVector(this->tcpMsnServer.getAllRooms(), "Rooms");
+}
+
+void TCPMessengerServer::listUsersInRoom(string roomName)
+{
+	printStringVector(this->tcpMsnServer.getUsersInRoom(roomName), "Users in room : " + roomName);
+}
+
+// Template method which prints a vector :)
+void TCPMessengerServer::printStringVector(vector<string> vect, string description)
+{
+	cout << "------------------------------" << endl;
+	cout << description << endl;
+	cout << "------------------------------" << endl;
+	for (unsigned int i = 0; i < vect.size(); i++)
 	{
-		cout << "peer " << (i+1) << ") " << peers[i] << endl;
+		cout << (i+1) << ") " << vect[i] << endl;
 	}
 	cout << "------------------------------" << endl;
 }

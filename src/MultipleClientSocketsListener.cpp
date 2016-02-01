@@ -1,33 +1,33 @@
-#include "MultipleTCPSocketsListener.h"
+#include "MultipleClientSocketsListener.h"
 #include <sys/select.h>
 //#include <libexplain/select.h>
 /*
  * Add the given socket to the socket list to be listen on
  */
-void MultipleTCPSocketsListener::addSocket(TCPSocket* socket )
+void MultipleClientSocketsListener::addClient(Client* client)
 {
 	//TODO: add he given socket to the socket list
-	if (socket == NULL)
+	if (client == NULL)
 	{
 		return;
 	}
-	this->sockets.push_back(socket);
+	this->clients.push_back(client);
 }
 
 /*
  * Set the given sockets to the socket list to be listen on
  */
-void MultipleTCPSocketsListener::addSockets(vector<TCPSocket*> socketVec)
+void MultipleClientSocketsListener::addClients(vector<Client*> clientVec)
 {
 	//TODO: set the given sockets as the socket list to selct from
-	for (unsigned int i = 0; i < socketVec.size(); i++)
+	for (unsigned int i = 0; i < clientVec.size(); i++)
 	{
-		addSocket(socketVec[i]);
+		addClient(clientVec[i]);
 	}
 }
-TCPSocket* MultipleTCPSocketsListener::listenToSocket()
+Client* MultipleClientSocketsListener::listenToClients()
 {
-	if (sockets.empty())
+	if (clients.empty())
 	{
 		return NULL;
 	}
@@ -41,9 +41,9 @@ TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 	
 	int biggestSocket = 0;
 	
-	for (unsigned int i = 0; i < this->sockets.size(); i++)
+	for (unsigned int i = 0; i < this->clients.size(); i++)
 	{
-		int currentFd = this->sockets[i]->getSocketFd();
+		int currentFd = this->clients[i]->getSocket()->getSocketFd();
 		FD_SET(currentFd, &readFd);
 
 		if (currentFd > biggestSocket)
@@ -57,16 +57,16 @@ TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 	timeout.tv_usec = 0;
 	int numOfActiveFds = select(biggestSocket + 1, &readFd, NULL, NULL, &timeout);
 	//TODO: check the returned value from the select to find the socket that is ready
-	TCPSocket* activeClient = NULL;
+	Client* activeClient = NULL;
 	if (numOfActiveFds > 0)
 	{
-		for (unsigned int i = 0; i < this->sockets.size(); i++)
+		for (unsigned int i = 0; i < this->clients.size(); i++)
 		{
-			TCPSocket* currentSocket = this->sockets[i];
-			if (FD_ISSET(currentSocket->getSocketFd(), &readFd))
+			Client* currentClient = this->clients[i];
+			if (FD_ISSET(currentClient->getSocket()->getSocketFd(), &readFd))
 			{
-				cout << "Incoming from : " << currentSocket->getClientAsString() << endl;
-				activeClient = currentSocket;
+				cout << "Incoming from : " << currentClient->getUsername() << endl;
+				activeClient = currentClient;
 				break;
 			}
 		}
@@ -76,13 +76,13 @@ TCPSocket* MultipleTCPSocketsListener::listenToSocket()
 	return activeClient;
 }
 
-int MultipleTCPSocketsListener::findBiggestFd(fd_set* readFd)
+int MultipleClientSocketsListener::findBiggestFd(fd_set* readFd)
 {
 	int biggest = 0;
 	
-	for (unsigned int i = 0; i < this->sockets.size(); i++)
+	for (unsigned int i = 0; i < this->clients.size(); i++)
 	{
-		int currentFd = this->sockets[i]->getSocketFd();
+		int currentFd = this->clients[i]->getSocket()->getSocketFd();
 		FD_SET(currentFd, readFd);
 
 		if (currentFd > biggest)
