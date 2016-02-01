@@ -43,10 +43,10 @@ void TCPMessengerServer::sendCommandToPeer(TCPSocket* peer, int command){
 
 void TCPMessengerServer::sendDataToPeer(TCPSocket* peer, string msg){
 	//TODO: send string to socket
-	int msgLength = htonl(msg.length());
+	int msgLength = htonl(msg.length() + 1);
 	peer->send((char*)&msgLength, sizeof(int));
-	peer->send(msg.c_str(), msg.length());
-	cout << "Sent data " << msg << endl;
+	peer->send(msg.c_str(), msg.length() + 1);
+	cout << "Send to client (" << ntohl(msgLength) << ") msg: " << msg.c_str() << endl;
 }
 
 bool TCPMessengerServer::isSocketClosed(TCPSocket* peer)
@@ -110,7 +110,7 @@ string TCPMessengerServer::vectorToString(vector<string> vect)
 	
 	for (unsigned int i = 0; i < vect.size(); i++)
 	{
-		packedVector += vect[i] + '\n';
+		packedVector += vect[i] + ';';
 	}
 	
 	return packedVector;
