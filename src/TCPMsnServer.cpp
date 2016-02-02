@@ -54,4 +54,6 @@ vector<string> TCPMsnServer::getUsersInRoom(string roomName)
 
 TCPMsnServer::~TCPMsnServer()
 {
+	this->tcpMsnDispatcher.waitForThread();
+	this->tcpMsnLoginHandler->waitForThread();
 }

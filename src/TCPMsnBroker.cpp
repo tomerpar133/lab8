@@ -81,6 +81,11 @@ void TCPMsnBroker::exit(Client* source, Client* target)
 	this->dispatcher->removeBroker(this->clientOne, this->clientTwo);
 }
 
+string TCPMsnBroker::getSessionName()
+{
+	return "{ " + this->clientOne->getUsername() + " & " + this->clientTwo->getUsername() + " }";
+}
+
 TCPMsnBroker::~TCPMsnBroker()
 {
 	cout << "broker died @-^--" << endl;

@@ -23,6 +23,7 @@ public:
 	TCPMsnConferenceBroker(string, Client*, TCPMsnDispatcher*);
 	void clientEnterRoom(Client*);
 	void clientLeaveRoom(Client*);
+	vector<string> getUsers();
 	void run();
 	void closeRoom();
 	void execute(int code, Client* source);

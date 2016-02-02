@@ -11,6 +11,7 @@ TCPMsnConferenceBroker::TCPMsnConferenceBroker(string roomName, Client* roomOwne
 
 void TCPMsnConferenceBroker::clientEnterRoom(Client* client)
 {
+	// TODO send the new user existing users in the chat room
 	this->clients.push_back(client);
 	// TODO notify the room owner of the new client
 }
@@ -68,11 +69,31 @@ void TCPMsnConferenceBroker::execute(int code, Client* source)
 	switch (code)
 	{
 	case CLOSE_ROOM:
-		this->closeRoom();
+		if (source == this->roomOwner)
+		{
+			this->closeRoom();
+			TCPMessengerServer::sendDataToPeer(source->getSocket(), SUCCESS);
+		}
+		else 
+		{
+			TCPMessengerServer::sendDataToPeer(source->getSocket(), FAILURE);
+		}
 		break;
 	default:
 		this->tcpMsnDispatcher->execute(code, source);
 	}
+}
+
+vector<string> TCPMsnConferenceBroker::getUsers()
+{
+	vector<string> users;
+	
+	for (unsigned int i = 0; i < this->clients.size(); i++)
+	{
+		users.push_back(this->clients[i]->getUsername());
+	}
+	
+	return users;
 }
 
 TCPMsnConferenceBroker::~TCPMsnConferenceBroker()

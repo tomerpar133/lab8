@@ -2,17 +2,14 @@
 #include "TCPMessengerServer.h"
 #include "TCPMessengerProtocol.h"
 #include "AuthUtils.h"
-#include <stdlib.h>
 
 /***********************   TCPMessengerServer implementation ******************************/
 
 TCPMessengerServer::TCPMessengerServer(){
 	this->tcpMsnServer.start();
-	//TODO: class initialization
 }
 
 void TCPMessengerServer::close(){
-	//TODO: close the server
 	this->tcpMsnServer.stop();
 }
 
@@ -20,7 +17,7 @@ TCPMessengerServer::~TCPMessengerServer(){
 }
 
 int TCPMessengerServer::readCommandFromPeer(TCPSocket* peer){
-	//TODO: read a command from socket
+	// read a command from socket
 	int command = 0;
 	peer->recv((char*)&command, sizeof(int));
 	cout << "Got command " << ntohl(command) << endl; 
@@ -28,7 +25,7 @@ int TCPMessengerServer::readCommandFromPeer(TCPSocket* peer){
 }
 
 string TCPMessengerServer::readDataFromPeer(TCPSocket* peer){
-	//TODO: read a string from socket
+	// read a string from socket
 	char msg[MAX_MSG_SIZE];
 	int msgLength;
 	peer->recv((char*)&msgLength, sizeof(int));
@@ -37,13 +34,13 @@ string TCPMessengerServer::readDataFromPeer(TCPSocket* peer){
 }
 
 void TCPMessengerServer::sendCommandToPeer(TCPSocket* peer, int command){
-	//TODO: send command to socket
+	// send command to socket
 	command = htonl(command);
 	peer->send((char*)&command, sizeof(int));
 }
 
 void TCPMessengerServer::sendDataToPeer(TCPSocket* peer, string msg){
-	//TODO: send string to socket
+	// send string to socket
 	int msgLength = htonl(msg.length() + 1);
 	peer->send((char*)&msgLength, sizeof(int));
 	peer->send(msg.c_str(), msg.length() + 1);
@@ -103,12 +100,16 @@ void TCPMessengerServer::printStringVector(vector<string> vect, string descripti
 
 string TCPMessengerServer::vectorToString(vector<string> vect)
 {
-	string packedVector = "";
+	ostringstream packedVector;
+	unsigned int i = 0;
 	
-	for (unsigned int i = 0; i < vect.size(); i++)
+	for (; i < vect.size() - 1; i++)
 	{
-		packedVector += (i+1) + ") " + vect[i] + "\n";
+		packedVector << (i+1) << ") " << vect[i] << endl;
 	}
 	
-	return packedVector;
+	if (i < vect.size())
+		packedVector << (i+1) << ") " << vect[i];
+	
+	return packedVector.str();
 }

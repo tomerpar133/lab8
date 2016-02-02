@@ -21,6 +21,7 @@ public:
 	void sendMessage(Client* source, Client* target);
 	void closeSession();
 	void exit(Client* source, Client* target);
+	string getSessionName();
 	virtual ~TCPMsnBroker();
 };
 

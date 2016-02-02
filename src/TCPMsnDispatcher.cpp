@@ -8,7 +8,6 @@ TCPMsnDispatcher::TCPMsnDispatcher()
 
 void TCPMsnDispatcher::addClient(Client* client)
 {
-	//this->multiTCPListener.addSocket(client);
 	this->clientsMap[client->getUsername()] = client;
 }
 
@@ -45,6 +44,9 @@ void TCPMsnDispatcher::execute(int code, Client* source)
 	{
 		case OPEN_SESSION_WITH_PEER:
 			this->openSession(source);
+			break;
+		case OPEN_ROOM:
+			this->openRoom(source);
 			break;
 		case LIST_USERS:
 			TCPMessengerServer::sendDataToPeer(source->getSocket(), 
@@ -121,6 +123,12 @@ vector<string> TCPMsnDispatcher::getClients()
 		clients.push_back(iter->first->getUsername());
 	}
 	
+	for(std::map<string, TCPMsnConferenceBroker*>::iterator iter = this->conferencesMap.begin(); iter != this->conferencesMap.end(); ++iter)
+	{
+		vector<string> roomUsers = iter->second->getUsers();
+		clients.insert(clients.begin(), roomUsers.begin(), roomUsers.end());
+	}
+	
 	return clients;
 }
 
@@ -134,31 +142,36 @@ vector<string> TCPMsnDispatcher::getSessions()
 		if (std::find(distinctBrokersList.begin(), distinctBrokersList.end(), iter->second) == distinctBrokersList.end())
 		{
 			distinctBrokersList.push_back(iter->second);
+			sessionsList.push_back(iter->second->getSessionName());
 		}
 	}
 	
-	for (unsigned int i = 0; i < distinctBrokersList.size(); i++)
-	{
-		// TODO: Session to string
-		//distinctBrokersList[i]
-	}
-	
-	return vector<string>();
+	return sessionsList;
 }
 
 vector<string> TCPMsnDispatcher::getRooms()
 {
-	return vector<string>();
+	vector<string> roomsList;
+	
+	for(std::map<string,TCPMsnConferenceBroker*>::iterator iter = this->conferencesMap.begin(); iter != this->conferencesMap.end(); ++iter)
+	{
+		roomsList.push_back(iter->first);
+	}
+	
+	return roomsList;
 }
 
 vector<string> TCPMsnDispatcher::getUsersInRoom(string roomName)
 {
+	if (this->conferencesMap.find(roomName) != this->conferencesMap.end())
+		return this->conferencesMap[roomName]->getUsers();
 	return vector<string>();
 }
 
 vector<Client*> TCPMsnDispatcher::getClientsSockets()
 {
 	vector<Client*> clients;
+	
 	for(std::map<string,Client*>::iterator iter = this->clientsMap.begin(); iter != this->clientsMap.end(); ++iter)
 	{
 		clients.push_back(iter->second);

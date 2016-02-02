@@ -14,6 +14,7 @@
 #include <vector>
 #include <set>
 #include <sys/ioctl.h>
+#include <sstream>
 #include "MThread.h"
 #include "TCPSocket.h"
 #include "MultipleClientSocketsListener.h"
@@ -24,7 +25,6 @@
 using namespace std;
 
 class TCPMessengerServer{
-	//TODO: add class properties
 	TCPMsnServer tcpMsnServer;
 
 public:

@@ -31,7 +31,8 @@
 #define LIST_ROOM_USERS				12
 #define OPEN_ROOM					13
 #define CLOSE_ROOM					14
-
+#define USER_ENTER_ROOM				15
+#define USER_LEAVE_ROOM				16
 #define SUCCESS "SUCCESS"
 #define FAILURE "FAILURE"
 
