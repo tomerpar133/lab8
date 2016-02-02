@@ -21,7 +21,6 @@ void TCPMsnLoginHandler::run()
 		if (!this->guestsPool.empty())
 		{
 			multiClientListener.addClients(this->guestsPool);
-			cout << "Login handler is listening... " << endl;
 			Client* client = multiClientListener.listenToClients();
 			if (client)
 			{
@@ -45,18 +44,30 @@ void TCPMsnLoginHandler::registerClient(Client* client)
 {
 	string username = TCPMessengerServer::readDataFromPeer(client->getSocket());
 	string password = TCPMessengerServer::readDataFromPeer(client->getSocket());
-	// Add them to the file of usernames and passwords? or to temp area to add to file in the end?
-	client->setUsername(username);
-	this->tcpMsnDispatcher->addClient(client);
+	
+	if (!authUtils.addUser(username, password))
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), FAILURE);
+	else
+	{
+		client->setUsername(username);
+		this->tcpMsnDispatcher->addClient(client);
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), SUCCESS);
+	}
 }
 
 void TCPMsnLoginHandler::clientLogin(Client* client)
 {
 	string username = TCPMessengerServer::readDataFromPeer(client->getSocket());
 	string password = TCPMessengerServer::readDataFromPeer(client->getSocket());
-	// if (password is correct)
-	client->setUsername(username);
-	this->tcpMsnDispatcher->addClient(client);
+	
+	if (!this->authUtils.authenticate(username, password))
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), FAILURE);
+	else
+	{
+		client->setUsername(username);
+		this->tcpMsnDispatcher->addClient(client);
+		TCPMessengerServer::sendDataToPeer(client->getSocket(), SUCCESS);
+	}
 }
 
 void TCPMsnLoginHandler::execute(int code, Client* client)
