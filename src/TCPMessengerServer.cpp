@@ -1,6 +1,7 @@
 
 #include "TCPMessengerServer.h"
 #include "TCPMessengerProtocol.h"
+#include "AuthUtils.h"
 #include <stdlib.h>
 
 /***********************   TCPMessengerServer implementation ******************************/
@@ -59,11 +60,7 @@ bool TCPMessengerServer::isSocketClosed(TCPSocket* peer)
 
 vector<string> TCPMessengerServer::getRegisteredUsers()
 {
-	vector<string> users;
-	users.push_back("Tomer");
-	users.push_back("Avihay");
-
-	return users;
+	return AuthUtils::getUsers();
 }
 
 void TCPMessengerServer::listRegisteredUsers()
@@ -110,7 +107,7 @@ string TCPMessengerServer::vectorToString(vector<string> vect)
 	
 	for (unsigned int i = 0; i < vect.size(); i++)
 	{
-		packedVector += vect[i] + ';';
+		packedVector += (i+1) + ") " + vect[i] + "\n";
 	}
 	
 	return packedVector;

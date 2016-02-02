@@ -1,5 +1,6 @@
 #include "TCPMsnDispatcher.h"
 #include "TCPMessengerServer.h"
+
 TCPMsnDispatcher::TCPMsnDispatcher()
 {
 	this->isActive = true;
@@ -97,6 +98,16 @@ void TCPMsnDispatcher::openSession(Client* sourceClient)
 	}
 }
 
+void TCPMsnDispatcher::openRoom(Client* source)
+{
+	string roomName = TCPMessengerServer::readDataFromPeer(source->getSocket());
+	if (this->conferencesMap[roomName])
+		this->conferencesMap[roomName]->clientEnterRoom(source);
+	else 
+		this->conferencesMap[roomName] = new TCPMsnConferenceBroker(roomName, source, this);
+	
+}
+
 vector<string> TCPMsnDispatcher::getClients()
 {
 	vector<string> clients;
@@ -167,6 +178,13 @@ void TCPMsnDispatcher::removeBroker(Client* clientOne, Client* clientTwo)
 	this->brokersMap.erase(clientOne);
 	this->brokersMap.erase(clientTwo);
 	delete broker;
+}
+
+void TCPMsnDispatcher::removeConferenceBroker(string roomName)
+{
+	TCPMsnConferenceBroker* conferenceBroker = this->conferencesMap[roomName];
+	this->conferencesMap.erase(roomName);
+	delete conferenceBroker;
 }
 
 TCPMsnDispatcher::~TCPMsnDispatcher()

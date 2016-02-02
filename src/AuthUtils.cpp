@@ -10,7 +10,7 @@ AuthUtils::AuthUtils()
 
 bool AuthUtils::addUser(string username, string password)
 {
-	if (!this->isUserExist(username))
+	if (!AuthUtils::isUserExist(username))
 	{
 		ofstream usersFile;
 		usersFile.open(USERS_FILE_PATH, fstream::app);
@@ -50,6 +50,28 @@ bool AuthUtils::isUserExist(string username)
 	usersFile.close();
 	
 	return false;
+}
+
+vector<string> AuthUtils::getUsers()
+{
+	vector<string> users;
+	ifstream usersFile;
+	string currUser;
+	usersFile.open(USERS_FILE_PATH);
+	
+	if (usersFile.is_open())
+	{
+		while(getline(usersFile, currUser))
+		{
+			users.push_back(currUser);			
+			if (!getline(usersFile, currUser))
+				break;
+		}
+	}
+	
+	usersFile.close();
+	
+	return users;
 }
 
 bool AuthUtils::authenticate(string username, string password)

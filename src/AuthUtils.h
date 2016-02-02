@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -13,9 +14,10 @@ class AuthUtils
 {
 public:
 	AuthUtils();
-	bool addUser(string, string);
-	bool isUserExist(string);
-	bool authenticate(string, string);
+	static bool addUser(string, string);
+	static bool isUserExist(string);
+	static bool authenticate(string, string);
+	static vector<string> getUsers();
 	virtual ~AuthUtils();
 };
 
