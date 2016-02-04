@@ -69,7 +69,7 @@ public:
 	 * return the address of the connected peer
 	 */
 	string fromAddr();
-	string getClientAsString();
+	string getDestIP();
 
 	int getSocketFd() const
 	{

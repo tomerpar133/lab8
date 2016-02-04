@@ -25,7 +25,8 @@ public:
 	void clientLeaveRoom(Client*);
 	vector<string> getUsers();
 	void run();
-	void closeRoom();
+	void closeRoom(Client* source);
+	void stop();
 	void execute(int code, Client* source);
 	virtual ~TCPMsnConferenceBroker();
 };

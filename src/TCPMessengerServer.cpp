@@ -103,6 +103,8 @@ string TCPMessengerServer::vectorToString(vector<string> vect)
 	ostringstream packedVector;
 	unsigned int i = 0;
 	
+	if (vect.size() == 0) return " ";
+	
 	for (; i < vect.size() - 1; i++)
 	{
 		packedVector << (i+1) << ") " << vect[i] << endl;

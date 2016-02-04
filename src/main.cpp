@@ -1,9 +1,10 @@
 //============================================================================
 // Name        : TCPMessengerServer
-// Author      : Eliav Menachi
-// Version     :
-// Copyright   :
-// Description :
+// Programmer1 : Tomer Parizer
+// Programmer2 : Avihay Azulay
+// Version     : 4.0.0
+// Copyright   : TNA
+// Description : Final Project
 //============================================================================
 
 #include <iostream>
@@ -15,7 +16,8 @@ typedef void (*commandHandler)();
 map<string, commandHandler> commandsMap;
 TCPMessengerServer msngrServer;
 
-void printInstructions(){
+void printInstructions()
+{
 	cout<<"-----------------------"<<endl;
 	cout<<"lu 	- list all users"<<endl;
 	cout<<"lcu 	- list connected users"<<endl;

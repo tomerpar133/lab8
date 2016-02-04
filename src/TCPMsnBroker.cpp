@@ -41,7 +41,7 @@ void TCPMsnBroker::execute(int command, Client* source, Client* target)
 			break;
 			
 		case CLOSE_SESSION_WITH_PEER:
-			this->closeSession();
+			this->closeSession(source);
 			break;
 			
 		case SEND_MSG_TO_PEER:
@@ -61,11 +61,12 @@ void TCPMsnBroker::sendMessage(Client* source, Client* target)
 	TCPMessengerServer::sendDataToPeer(target->getSocket(), message);
 }
 
-void TCPMsnBroker::closeSession()
+void TCPMsnBroker::closeSession(Client* source)
 {
+	Client* target = source == this->clientOne ? this->clientTwo : this->clientOne;
 	this->isActive = false;
-	TCPMessengerServer::sendCommandToPeer(this->clientOne->getSocket(), CLOSE_SESSION_WITH_PEER);
-	TCPMessengerServer::sendCommandToPeer(this->clientTwo->getSocket(), CLOSE_SESSION_WITH_PEER);
+	TCPMessengerServer::sendCommandToPeer(target->getSocket(), CLOSE_SESSION_WITH_PEER);
+	TCPMessengerServer::readCommandFromPeer(target->getSocket());
 	this->dispatcher->addClient(this->clientOne);
 	this->dispatcher->addClient(this->clientTwo);
 	this->dispatcher->removeBroker(this->clientOne, this->clientTwo);

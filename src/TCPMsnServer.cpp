@@ -4,7 +4,7 @@
 TCPMsnServer::TCPMsnServer()
 {
 	this->isActive = true;
-	this->tcpMsnLoginHandler = new TCPMsnLoginHandler(&this->tcpMsnDispatcher);
+	this->tcpMsnLoginHandler = new TCPMsnLoginHandler(&this->tcpMsnDispatcher); 
 }
 
 void TCPMsnServer::run()
@@ -27,7 +27,7 @@ void TCPMsnServer::listenForever()
 	{
 		//Send the socket to the Dispatcher
 		TCPSocket* newGuestSocket = tcpSocket.listenAndAccept();
-		cout << "client connected: " << newGuestSocket->getClientAsString() << endl; 
+		cout << "client connected: " << newGuestSocket->getDestIP() << endl; 
 		this->tcpMsnLoginHandler->addGuest(newGuestSocket);
 	}
 }
@@ -54,6 +54,10 @@ vector<string> TCPMsnServer::getUsersInRoom(string roomName)
 
 TCPMsnServer::~TCPMsnServer()
 {
+	this->tcpMsnDispatcher.stop();
+	this->tcpMsnLoginHandler->stop();
 	this->tcpMsnDispatcher.waitForThread();
+	cout << "Dispatcher was closed" << endl;
 	this->tcpMsnLoginHandler->waitForThread();
+	delete this->tcpMsnLoginHandler;
 }

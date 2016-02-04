@@ -19,7 +19,7 @@ public:
 	void run();
 	void execute(int command, Client* source, Client* target);
 	void sendMessage(Client* source, Client* target);
-	void closeSession();
+	void closeSession(Client* source);
 	void exit(Client* source, Client* target);
 	string getSessionName();
 	virtual ~TCPMsnBroker();

@@ -41,6 +41,7 @@ public:
 	void openSession(Client* source);
 	void openRoom(Client*);
 	vector<Client*> getClientsSockets();
+	void stop();
 	virtual ~TCPMsnDispatcher();
 };
 

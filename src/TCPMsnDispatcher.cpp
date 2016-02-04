@@ -25,6 +25,7 @@ void TCPMsnDispatcher::run()
 				if (TCPMessengerServer::isSocketClosed(client->getSocket()))
 				{
 					this->removeClient(client->getUsername());
+					delete client;
 				}
 				else
 				{
@@ -66,6 +67,8 @@ void TCPMsnDispatcher::execute(int code, Client* source)
 					TCPMessengerServer::vectorToString(this->getUsersInRoom(roomName)));
 			break;
 		case EXIT:
+			this->removeClient(source->getUsername());
+			delete source;
 			break;
 	}
 }
@@ -73,26 +76,35 @@ void TCPMsnDispatcher::execute(int code, Client* source)
 void TCPMsnDispatcher::openSession(Client* sourceClient)
 {
 	// Search for existing session and destroy if exist
-	if (brokersMap[sourceClient])
+	if (this->brokersMap.find(sourceClient) != this->brokersMap.end())
 	{
-		brokersMap[sourceClient]->closeSession();                                                 
+		brokersMap[sourceClient]->closeSession(sourceClient);                                                 
 	}
 	
 	string targetStr = TCPMessengerServer::readDataFromPeer(sourceClient->getSocket());
 	Client* targetClient = this->clientsMap[targetStr];
 	if (targetClient)
 	{
+		int targetReply;
 		TCPMessengerServer::sendCommandToPeer(targetClient->getSocket(), OPEN_SESSION_WITH_PEER);
 		TCPMessengerServer::sendDataToPeer(targetClient->getSocket(), sourceClient->getUsername());
-		TCPMessengerServer::sendCommandToPeer(sourceClient->getSocket(), SESSION_ESTABLISHED);
-		// Create new broker with sourceClient and targetClient
-		TCPMsnBroker* broker = new TCPMsnBroker(sourceClient, targetClient, this);
-		this->brokersMap[sourceClient] = broker;
-		this->brokersMap[targetClient] = broker;
-		this->removeClient(sourceClient->getUsername());
-		this->removeClient(targetClient->getUsername());
-		cout << "Executing broker with peers : {" << sourceClient->getUsername() << " & " << targetClient->getUsername() << "}" << endl;
-		broker->start();
+		targetReply = TCPMessengerServer::readCommandFromPeer(targetClient->getSocket());
+		if (targetReply == SESSION_ESTABLISHED)
+		{
+			TCPMessengerServer::sendCommandToPeer(sourceClient->getSocket(), SESSION_ESTABLISHED);
+			// Create new broker with sourceClient and targetClient
+			TCPMsnBroker* broker = new TCPMsnBroker(sourceClient, targetClient, this);
+			this->brokersMap[sourceClient] = broker;
+			this->brokersMap[targetClient] = broker;
+			this->removeClient(sourceClient->getUsername());
+			this->removeClient(targetClient->getUsername());
+			cout << "Executing broker with peers : {" << sourceClient->getUsername() << " & " << targetClient->getUsername() << "}" << endl;
+			broker->start();
+		}
+		else
+		{
+			TCPMessengerServer::sendCommandToPeer(sourceClient->getSocket(), SESSION_REFUSED);
+		}
 	} 
 	else 
 	{
@@ -103,11 +115,19 @@ void TCPMsnDispatcher::openSession(Client* sourceClient)
 void TCPMsnDispatcher::openRoom(Client* source)
 {
 	string roomName = TCPMessengerServer::readDataFromPeer(source->getSocket());
-	if (this->conferencesMap[roomName])
-		this->conferencesMap[roomName]->clientEnterRoom(source);
-	else 
+	TCPMessengerServer::sendDataToPeer(source->getSocket(), SUCCESS);
+	this->removeClient(source->getUsername());
+	if (this->conferencesMap.find(roomName) == this->conferencesMap.end())
+	{
+		cout << "Create new room - " << roomName << endl;
 		this->conferencesMap[roomName] = new TCPMsnConferenceBroker(roomName, source, this);
-	
+		this->conferencesMap[roomName]->start();
+	}
+	else 
+	{
+		cout << "Add user to existing room - " << roomName << endl;
+		this->conferencesMap[roomName]->clientEnterRoom(source);
+	}
 }
 
 vector<string> TCPMsnDispatcher::getClients()
@@ -152,6 +172,8 @@ vector<string> TCPMsnDispatcher::getSessions()
 vector<string> TCPMsnDispatcher::getRooms()
 {
 	vector<string> roomsList;
+
+	if (this->conferencesMap.size() == 0) return vector<string>();
 	
 	for(std::map<string,TCPMsnConferenceBroker*>::iterator iter = this->conferencesMap.begin(); iter != this->conferencesMap.end(); ++iter)
 	{
@@ -182,22 +204,30 @@ vector<Client*> TCPMsnDispatcher::getClientsSockets()
 
 void TCPMsnDispatcher::removeClient(string client)
 {
-	this->clientsMap.erase(client);
+	this->clientsMap.erase(this->clientsMap.find(client));
 }
 
 void TCPMsnDispatcher::removeBroker(Client* clientOne, Client* clientTwo)
 {
-	TCPMsnBroker* broker = this->brokersMap[clientOne];
-	this->brokersMap.erase(clientOne);
-	this->brokersMap.erase(clientTwo);
+	TCPMsnBroker* broker = this->brokersMap.find(clientOne)->second;
+	this->brokersMap.erase(this->brokersMap.find(clientOne));
+	this->brokersMap.erase(this->brokersMap.find(clientTwo));
 	delete broker;
 }
 
 void TCPMsnDispatcher::removeConferenceBroker(string roomName)
 {
-	TCPMsnConferenceBroker* conferenceBroker = this->conferencesMap[roomName];
-	this->conferencesMap.erase(roomName);
-	delete conferenceBroker;
+	std::map<string,TCPMsnConferenceBroker*>::iterator iter = this->conferencesMap.find(roomName);
+	TCPMsnConferenceBroker* conferenceBroker = iter->second;
+	this->conferencesMap.erase(iter);
+	conferenceBroker->stop();
+	cout << "Room was deleted <" << roomName << endl;
+	cout << "Rooms count " << this->conferencesMap.size() << endl;
+}
+
+void TCPMsnDispatcher::stop()
+{
+	this->isActive = false;
 }
 
 TCPMsnDispatcher::~TCPMsnDispatcher()
@@ -210,7 +240,7 @@ TCPMsnDispatcher::~TCPMsnDispatcher()
 		// Search for existing session and destroy if exist
 		if (this->brokersMap[client])
 		{
-			this->brokersMap[client]->closeSession();                                                 
+			this->brokersMap[client]->closeSession(client);                                                 
 		}
 		
 		client->getSocket()->cclose();

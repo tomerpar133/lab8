@@ -29,6 +29,7 @@ void TCPMsnLoginHandler::run()
 					vector<Client*>::iterator clientToRemove = std::find(this->guestsPool.begin(), this->guestsPool.end(), client);
 					if (clientToRemove != this->guestsPool.end())
 						this->guestsPool.erase(clientToRemove);
+					cout << "Guest <" << client->getSocket()->getDestIP() << "> got disconnected." << endl;
 				}
 				else
 				{
@@ -49,6 +50,7 @@ void TCPMsnLoginHandler::registerClient(Client* client)
 		TCPMessengerServer::sendDataToPeer(client->getSocket(), FAILURE);
 	else
 	{
+		removeGuest(client);
 		client->setUsername(username);
 		this->tcpMsnDispatcher->addClient(client);
 		TCPMessengerServer::sendDataToPeer(client->getSocket(), SUCCESS);
@@ -64,6 +66,7 @@ void TCPMsnLoginHandler::clientLogin(Client* client)
 		TCPMessengerServer::sendDataToPeer(client->getSocket(), FAILURE);
 	else
 	{
+		removeGuest(client);
 		client->setUsername(username);
 		this->tcpMsnDispatcher->addClient(client);
 		TCPMessengerServer::sendDataToPeer(client->getSocket(), SUCCESS);
@@ -99,6 +102,10 @@ void TCPMsnLoginHandler::execute(int code, Client* client)
 		TCPMessengerServer::sendDataToPeer(client->getSocket(), 
 				TCPMessengerServer::vectorToString(this->tcpMsnDispatcher->getUsersInRoom(roomName)));
 		break;
+	case EXIT:
+		this->removeGuest(client);
+		delete client;
+		break;
 	default:
 		this->invalideOpcode(client);
 		break;
@@ -111,7 +118,18 @@ void TCPMsnLoginHandler::invalideOpcode(Client* client)
 	TCPMessengerServer::sendDataToPeer(client->getSocket(), INVALID_OPERATION);
 }
 
+void TCPMsnLoginHandler::removeGuest(Client* guest)
+{
+	vector<Client*>::iterator guestToRemove = std::find(this->guestsPool.begin(), this->guestsPool.end(), guest);
+	if (guestToRemove != this->guestsPool.end())
+		this->guestsPool.erase(guestToRemove);
+}
+
+void TCPMsnLoginHandler::stop()
+{
+	this->isActive = false;
+}
+
 TCPMsnLoginHandler::~TCPMsnLoginHandler()
 {
-	
 }

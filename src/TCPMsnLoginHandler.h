@@ -22,11 +22,13 @@ class TCPMsnLoginHandler : public MThread
 public:
 	TCPMsnLoginHandler(TCPMsnDispatcher* tcpMsnDispatcher);
 	void addGuest(TCPSocket* socket);
+	void removeGuest(Client* guest);
 	void registerClient(Client* client);
 	void clientLogin(Client* client);
 	void invalideOpcode(Client* client);
 	void run();
 	void execute(int code, Client* client);
+	void stop();
 	virtual ~TCPMsnLoginHandler();
 };
 
